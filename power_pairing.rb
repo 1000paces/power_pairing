@@ -1,4 +1,6 @@
 require 'date'
+require 'rubyXL'
+
 Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
 
 $avoid_club = false

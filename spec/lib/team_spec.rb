@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'team'
 
 describe Team do

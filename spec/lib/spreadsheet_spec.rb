@@ -1,3 +1,5 @@
-RSpec.describe Spreadsheet do
+require 'spreadsheet'
+
+describe Spreadsheet do
 
 end

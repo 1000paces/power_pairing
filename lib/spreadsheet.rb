@@ -1,5 +1,3 @@
-require 'rubyXL'
-
 class Spreadsheet
 
 	def self.open(path)
