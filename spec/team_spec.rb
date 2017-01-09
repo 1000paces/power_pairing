@@ -72,11 +72,8 @@ describe Team do
 	end
 
 	describe "#scheduled" do
-		it "returns the number of games scheduled for a team (even if not yet played)" do
-			#puts team_1.scheduled(games)
-			#team_1.scheduled(games).to eq(0)
-			#expect(1).to be(1), "one is not two!"
-			expect(team_1.scheduled(games)).to be(10)
+		it "returns the number of games for a team, even if not yet played" do
+			expect(team_1.scheduled(games)).to eq(10)
 		end
 	end
 
