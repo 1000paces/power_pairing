@@ -4,7 +4,7 @@ Dir[File.dirname(__FILE__) + '/models/*.rb'].each {|file| require file }
 $avoid_club = false
 $avoid_replays = true
 season_start = DateTime.new(2016,9,11)
-path = "/Users/rmiles/power_pair/results.xlsx"
+path = "./results.xlsx"
 verbose = true
 test_flag = true
 
