@@ -1,3 +1,6 @@
-RSpec.describe Schedule do
+require 'schedule'
+
+
+describe Schedule do
 
 end
