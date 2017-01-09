@@ -1,5 +1,5 @@
 require 'date'
-Dir[File.dirname(__FILE__) + '/models/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
 
 $avoid_club = false
 $avoid_replays = true

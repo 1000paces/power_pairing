@@ -22,6 +22,7 @@ class Team
 
 	def scheduled(games)
 		x = self.opponents(games).size
+		return x
 	end
 
 	def goal_diff
