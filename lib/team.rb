@@ -38,7 +38,7 @@ class Team
   def next_match(remaining_teams, games)
     oppo = ""
     assigned_bye = false
-    puts "FINDING OPPONENT FOR #{self.label} FROM #{remaining_teams.map{ |m| m.label }}" if $verbose
+    Logger.info("FINDING OPPONENT FOR #{self.label} FROM #{remaining_teams.map{ |m| m.label }}")
     remaining_teams.each do |team|
       next if team.label == self.label #### don't want to play yourself
       return team if team == remaining_teams.last #&& remaining_teams.size <=2
@@ -57,7 +57,7 @@ class Team
     games.each do |game|
       next if game.nil?
       if game.away_team == 'BYE' && game.home_team == self.label
-        puts "\t\t#{game.home_team} HAD A BYE ALREADY" if $verbose
+        Logger.info("\t\t#{game.home_team} HAD A BYE ALREADY")
         return false
       end
     end
@@ -68,10 +68,7 @@ class Team
     retval = []
     
     games.each do |game|
-      #puts "GAME DATE IS #{game.game_date}"
       next if game.nil?
-      #next if game.home_goals.nil? || game.away_goals.nil?
-      #next if game.home_goals.empty? || game.away_goals.empty?
       if [game.home_team, game.away_team].include?(self.label)
         next if include_byes == false && game.away_team == 'BYE'
         if self.label == game.home_team

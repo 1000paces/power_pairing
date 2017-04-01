@@ -47,7 +47,7 @@ module Schedule
     pairings = []
     i = 1
     remaining_teams = table_hash.map {|key, value| value}
-    puts "REMOVING BYE TEAM (#{bye_team.label}) FROM THIS WEEKS PAIRING" if $verbose && !bye_team.nil?
+    Logger.info("REMOVING BYE TEAM (#{bye_team.label}) FROM THIS WEEKS PAIRING") if !bye_team.nil?
     remaining_teams.delete(bye_team) unless bye_team.nil?
     
     table_hash.each do |key, team|
@@ -55,31 +55,7 @@ module Schedule
       next unless remaining_teams.include?(team)
       
       next_opponent = team.next_match(remaining_teams, games)
-      if 1==2# bye
-        if bye_team.nil?
-          puts "\t\tSET THE BYE TEAM TO #{team.label}" if $verbose
-          bye_team = team
-          #pairings << "#{team.position}|BYE"
-          #need_a_bye = false
-        else
-          puts "WE ALREADY HAVE A BYE THIS ROUND: #{bye_team.label} (#{bye_team.position})" if $verbose
-          puts "\tDOES #{team.label} HAVE A BYE? #{!team.eligible_for_bye?(games)}" if $verbose
-          if team.eligible_for_bye?(games)
-            prev_bye_team = bye_team
-            bye_team = team
-            remaining_teams.delete(bye_team)
-            remaining_teams << prev_bye_team
-            next_opponent, bye = prev_bye_team.next_match(remaining_teams, games, false)
-            pairings << Schedule.preferred_home(prev_bye_team,next_opponent)
-          end
-         # pairings << Schedule.preferred_home(team,bye_team)
-          #bye_team = nil
-          #bye_fix = true
-        end
-      else
-      #  pairings << Schedule.preferred_home(team,next_opponent)
-      end
-      puts "(#{team.position}) #{team.label} vs. (#{next_opponent.position}) #{next_opponent.label}"
+      Logger.info("(#{team.position}) #{team.label} vs. (#{next_opponent.position}) #{next_opponent.label}")
       pairings << Schedule.preferred_home(team,next_opponent)
       i += 1
       remaining_teams.delete(next_opponent)
@@ -89,7 +65,7 @@ module Schedule
     pairings << "#{bye_team.position}|BYE" unless bye_team.nil?
     
     #### Look for pairings that have already happened
-    puts "" if $verbose
+    Logger.info("\n")
     need_fix = Schedule.check_pairings(pairings, table_hash, games, bye_team)
 
     unless need_fix.empty?
@@ -103,10 +79,10 @@ module Schedule
   end
 
   def self.check_pairings(pairings, table_hash, games, bye_team)
-    puts "BYE TEAM IS #{bye_team.label}"
+    Logger.info("BYE TEAM IS #{bye_team.label}")
     retval = []
     pairings.each_with_index do |pair, index|
-      puts "EXAMINE #{pair}" if $verbose
+      Logger.info("EXAMINE #{pair}")
       key1, key2 = pair.split("|")
       team1 = table_hash[key1.to_i]
       next if bye_team == team1
@@ -121,20 +97,18 @@ module Schedule
         end
       end
     end
-    puts "NEEDS FIXING: #{retval.empty? ? 'NOTHING' : retval}" if $verbose
+    Logger.info("NEEDS FIXING: #{retval.empty? ? 'NOTHING' : retval}")
     return retval
   end
 
   def self.fix_pairings(pairings, need_fix, table_hash, games)
-    #puts "NEED_FIX IS #{need_fix}"
-    
     need_fix.each_with_index do |pair, index|
       bad_match = pairings.index(pair)
       key1, key2 = pair.split("|")
       x = nil
       i = 1
       while x.nil?
-        puts "TRYING #{i}" if $verbose
+        Logger.info("TRYING #{i}")
         prev_match = pairings[bad_match - i]
         pkey1, pkey2 = prev_match.split("|")
         x = Schedule.check_revision(bad_match,bad_match-i,key1,key2,pkey1,pkey2,table_hash,games)
@@ -155,21 +129,21 @@ module Schedule
     pteam2 = table_hash[pkey2.to_i]
 
     if u1.include?(pkey2.to_i) && u2.include?(pkey1.to_i)
-      puts "Switching opponents and preserving H/A worked" if $verbose
+      Logger.info("\tSwitching opponents and preserving H/A worked")
       return [[bad_match, Schedule.preferred_home(team1,pteam2)],[prev_match, Schedule.preferred_home(team2,pteam1)]]
     elsif u1.include?(pkey1.to_i) && u2.include?(pkey2.to_i)
-      puts "Switching opponents but losing H/A worked" if $verbose 
+      Logger.info("\tSwitching opponents but losing H/A worked")
       return [[bad_match, Schedule.preferred_home(team1,pteam1)],[prev_match, Schedule.preferred_home(team2,pteam2)]]
     else
-      puts "This switch doesn't work" if $verbose
-      puts "AVOID CLUB IS #{$avoid_club}" if $verbose
-      puts "AVOID REPLAYS IS #{$avoid_replays}" if $verbose
+      Logger.info("\tThis switch doesn't work")
+      Logger.info("AVOID CLUB IS #{$avoid_club}")
+      Logger.info("AVOID REPLAYS IS #{$avoid_replays}")
       if $avoid_club == false && $avoid_replays == true
-        puts "\t\t***Allow Replays***" if $verbose
+        Logger.info("\t\t***Allow Replays***")
         $avoid_replays = false
       end
       if $avoid_club == true
-        puts "\t\t***Allow Intra-Club Matchups***" if $verbose
+        Logger.info("\t\t***Allow Intra-Club Matchups***")
         $avoid_club = false
       end
       puts ""
