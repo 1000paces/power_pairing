@@ -6,17 +6,23 @@ Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
 options = {verbose: false, avoid_replays: true, avoid_club: false, test_mode: false}
 
 OptionParser.new do |opts|
-	opts.on("-v", "--verbose", "Verbose Mode") do |v|
+	opts.on("-v", "--verbose", "Verbose mode.") do |v|
 		options[:verbose] = v
 	end
-	opts.on("-r", "--replays", "Avoid Replays") do |v|
-		options[:avoid_replays] = v
+	opts.on("-r", "--replays", "Don't pair replays of previous games.") do |r|
+		options[:avoid_replays] = r
 	end	
-	opts.on("-c", "--club", "Avoid Intra-Club Games") do |v|
-		options[:avoid_club] = v
+	opts.on("-c", "--club", "Don't pair intra-club games") do |c|
+		options[:avoid_club] = c
 	end
-	opts.on("-t", "--test", "Test Mode") do |v|
-		options[:test_mode] = v
+	opts.on("-t", "--test", "Run in Test Mode, don't save anything") do |t|
+		options[:test_mode] = t
+	end	
+	opts.on("-f", "--file FILE", "File to process (including path)") do |f|
+		options[:file] = f
+	end
+	opts.on("-b", "--bye BYE", "Assign BYE to a specific team (pass integer representing position in table") do |b|
+		options[:bye] = b
 	end	
 end.parse!
 
@@ -28,11 +34,12 @@ $test_flag = options[:test_mode]
 Logger.info("RUNNING IN VERBOSE MODE")
 
 season_start = DateTime.new(2017,4,30)
-path = "./girls.xlsx"
+Logger.info("FILE IS #{options[:file]}")
+path = options[:file] #"./girls.xlsx"
 bye_team = nil
 
 Logger.info("\n\n")
-puts "START PAIRING" 
+puts "*** BEGIN PAIRING *** " 
 #### open the spreadsheet
 workbook = Spreadsheet.open(path)
 
@@ -51,9 +58,14 @@ games = Schedule.games(raw_schedule, table)
 
 Logger.info("THERE ARE #{games.size} GAMES (INCLUDING BYES)")
 
-
 if need_bye_team
-	bye_key, bye_team = Schedule.select_bye_team(table, games)
+	if options[:bye].empty?
+		bye_key, bye_team = Schedule.select_bye_team(table, games)
+	else
+		Logger.info("MANUALLY ASSIGNING BYE TO #{options[:bye]}")
+		bye_key = options[:bye].to_i
+		bye_team = table[bye_key]
+	end
 	Logger.info("BYE TEAM IS #{bye_team.label} (#{bye_team.position})")
 end
 
@@ -78,5 +90,5 @@ Spreadsheet.write(workbook, "Results", pairings, table, games, season_start)
 Spreadsheet.save(workbook, path) if $test_flag == false
 
 Logger.info(Schedule.print(pairings, table))
-puts "FINISHED PAIRINGS"
+puts "*** PAIRINGS COMPLETE ***"
 Logger.info("\n\n")

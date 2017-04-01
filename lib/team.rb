@@ -38,7 +38,7 @@ class Team
   def next_match(remaining_teams, games)
     oppo = ""
     assigned_bye = false
-    Logger.info("FINDING OPPONENT FOR #{self.label} FROM #{remaining_teams.map{ |m| m.label }}")
+    Logger.info("\tFINDING OPPONENT FOR #{self.label} FROM #{remaining_teams.map{ |m| m.label }}")
     remaining_teams.each do |team|
       next if team.label == self.label #### don't want to play yourself
       return team if team == remaining_teams.last #&& remaining_teams.size <=2
@@ -47,10 +47,6 @@ class Team
       oppo = team
       return oppo
     end
-
-    return "FUCK"
-    #return Team.new(0,"BYE"), true
-    #return Team.new(0,"CAN'T PAIR")
   end
 
   def eligible_for_bye?(games)
