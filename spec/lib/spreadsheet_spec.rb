@@ -1,4 +1,4 @@
-require 'spreadsheet'
+require "spec_helper"
 
 describe Spreadsheet do
 	before do

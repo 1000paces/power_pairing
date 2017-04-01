@@ -1,6 +1,4 @@
-require "table"
-require "spreadsheet"
-require 'team'
+require "spec_helper"
 
 describe Table do
 	before do

@@ -1,4 +1,4 @@
-require 'team'
+require "spec_helper"
 
 describe Team do
 
