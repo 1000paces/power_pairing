@@ -55,7 +55,7 @@ module Schedule
       next unless remaining_teams.include?(team)
       
       next_opponent = team.next_match(remaining_teams, games)
-      Logger.info("(#{team.position}) #{team.label} vs. (#{next_opponent.position}) #{next_opponent.label}")
+      Logger.info("  => (#{team.position}) #{team.label} vs. (#{next_opponent.position}) #{next_opponent.label}")
       pairings << Schedule.preferred_home(team,next_opponent)
       i += 1
       remaining_teams.delete(next_opponent)
@@ -79,7 +79,7 @@ module Schedule
   end
 
   def self.check_pairings(pairings, table_hash, games, bye_team)
-    Logger.info("BYE TEAM IS #{bye_team.label}")
+    Logger.info("BYE TEAM IS #{bye_team.label}") unless bye_team.nil?
     retval = []
     pairings.each_with_index do |pair, index|
       Logger.info("EXAMINE #{pair}")

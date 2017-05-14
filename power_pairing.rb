@@ -3,7 +3,7 @@ require 'optparse'
 
 Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
 
-options = {verbose: false, avoid_replays: true, avoid_club: false, test_mode: false}
+options = {verbose: false, avoid_replays: true, avoid_club: false, test_mode: false, bye: nil, file: nil}
 
 OptionParser.new do |opts|
 	opts.on("-v", "--verbose", "Verbose mode.") do |v|
@@ -29,9 +29,9 @@ end.parse!
 $avoid_club = options[:avoid_club]
 $avoid_replays = options[:avoid_replays]
 $verbose = options[:verbose]
-$test_flag = options[:test_mode]
 
 Logger.info("RUNNING IN VERBOSE MODE")
+Logger.info("RUNNING IN TEST MODE, NOTHING WILL BE SAVED") if options[:test_mode]
 
 season_start = DateTime.new(2017,4,30)
 Logger.info("FILE IS #{options[:file]}")
@@ -59,7 +59,7 @@ games = Schedule.games(raw_schedule, table)
 Logger.info("THERE ARE #{games.size} GAMES (INCLUDING BYES)")
 
 if need_bye_team
-	if options[:bye].empty?
+	if options[:bye].nil?
 		bye_key, bye_team = Schedule.select_bye_team(table, games)
 	else
 		Logger.info("MANUALLY ASSIGNING BYE TO #{options[:bye]}")
@@ -87,7 +87,7 @@ Logger.info("\n")
 Spreadsheet.write(workbook, "Results", pairings, table, games, season_start)
 
 #### save the workbook to disk
-Spreadsheet.save(workbook, path) if $test_flag == false
+Spreadsheet.save(workbook, path) if options[:test_mode] == false
 
 Logger.info(Schedule.print(pairings, table))
 puts "*** PAIRINGS COMPLETE ***"
